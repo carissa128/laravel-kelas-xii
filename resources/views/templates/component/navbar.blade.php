@@ -36,7 +36,18 @@
               </ul>
             </li>
             <li class="w3_home_act {{ Route::current()->getName() == 'movies' ? 'active' : '' }}"><a href="{{ route('movies') }}">Movies</a></li>
-
+            @auth
+              @if (Auth::user()->role?->name === 'admin')
+                <li><a href="{{ route('admin.films.index') }}">Kelola Film</a></li>
+                <li><a href="{{ route('admin.casts.index') }}">Kelola Cast</a></li>
+                <li><a href="{{ route('admin.genres.index') }}">Kelola Genre</a></li>
+                <li><a href="{{ route('admin.perans.index') }}">Kelola Peran</a></li>
+                <li><a href="{{ route('admin.users.index') }}">Data User</a></li>
+              @else
+                <li><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ route('profile.show') }}">Profil Saya</a></li>
+              @endif
+            @endauth
           </ul>
         </nav>
       </div>

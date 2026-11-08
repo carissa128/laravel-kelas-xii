@@ -16,4 +16,9 @@ class Peran extends Model
     {
         return $this->belongsTo(Cast::class);
     }
+
+    public function film(): BelongsTo
+    {
+        return $this->belongsTo(Film::class);
+    }
 }

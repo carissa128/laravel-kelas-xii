@@ -122,6 +122,7 @@
             @endif
             <div class="agile-info-wthree-box">
               @auth
+                @if (Auth::user()->role?->name === 'user')
                 <form action="{{ route('comments.store', $film) }}" method="post">
                   @csrf
                   <label for="rating">Rating</label>
@@ -142,6 +143,9 @@
                   <input type="submit" value="Kirim komentar">
                   <div class="clearfix"> </div>
                 </form>
+                @else
+                  <p>Akun administrator tidak dapat mengirim komentar.</p>
+                @endif
               @else
                 <p>Silakan login untuk menulis komentar.</p>
                 <a href="#" data-toggle="modal" data-target="#myModal">Login</a>

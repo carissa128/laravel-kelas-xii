@@ -13,6 +13,12 @@
       <ul>
         @auth
           <li>{{ Auth::user()->name }}</li>
+          @if (Auth::user()->role?->name === 'admin')
+            <li><a href="{{ route('admin.dashboard') }}">Dashboard Admin</a></li>
+          @else
+            <li><a href="{{ route('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ route('profile.show') }}">Profil</a></li>
+          @endif
           <li>
             <form action="{{ route('logout') }}" method="post">
               @csrf

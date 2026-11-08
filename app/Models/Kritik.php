@@ -23,4 +23,9 @@ class Kritik extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function film(): BelongsTo
+    {
+        return $this->belongsTo(Film::class);
+    }
 }
