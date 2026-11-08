@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Film;
 use App\Models\Kritik;
 use App\Http\Requests\StoreKritikRequest;
 use App\Http\Requests\UpdateKritikRequest;
+use Illuminate\Http\RedirectResponse;
 
 class KritikController extends Controller
 {
@@ -27,9 +29,17 @@ class KritikController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreKritikRequest $request)
+    public function store(StoreKritikRequest $request, Film $film): RedirectResponse
     {
-        //
+        $film->kritiks()->create([
+            'comment' => $request->validated('comment'),
+            'rating' => $request->validated('rating'),
+            'user_id' => $request->user()->id,
+        ]);
+
+        return redirect()
+            ->to(route('movies.show', $film).'#comments')
+            ->with('status', 'Komentar berhasil dikirim.');
     }
 
     /**

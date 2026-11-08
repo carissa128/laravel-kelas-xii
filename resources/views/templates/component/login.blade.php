@@ -14,19 +14,38 @@
               </div>
               <div class="form">
               <h3>Login to your account</h3>
-              <form action="#" method="post">
-                <input type="text" name="Username" placeholder="Username" required="">
-                <input type="password" name="Password" placeholder="Password" required="">
+              <form action="{{ url('/login') }}" method="post">
+                @csrf
+                @if ($errors->has('login') || $errors->has('password'))
+                  <div role="alert">
+                    @foreach (array_merge($errors->get('login'), $errors->get('password')) as $error)
+                      <p>{{ $error }}</p>
+                    @endforeach
+                  </div>
+                @endif
+                <input type="text" name="login" placeholder="Username atau Email" value="{{ old('login') }}" autocomplete="username" required="">
+                <input type="password" name="password" placeholder="Password" autocomplete="current-password" required="">
                 <input type="submit" value="Login">
               </form>
               </div>
               <div class="form">
               <h3>Create an account</h3>
-              <form action="#" method="post">
-                <input type="text" name="Username" placeholder="Username" required="">
-                <input type="password" name="Password" placeholder="Password" required="">
-                <input type="email" name="Email" placeholder="Email Address" required="">
-                <input type="text" name="Phone" placeholder="Phone Number" required="">
+              <form action="{{ url('/register') }}" method="post">
+                @csrf
+                @if ($errors->getBag('register')->any())
+                  <div role="alert">
+                    @foreach ($errors->getBag('register')->all() as $error)
+                      <p>{{ $error }}</p>
+                    @endforeach
+                  </div>
+                @endif
+                <input type="text" name="name" placeholder="Username" value="{{ old('name') }}" autocomplete="username" required>
+                <input type="email" name="email" placeholder="Email Address" value="{{ old('email') }}" autocomplete="email" required>
+                <input type="number" name="umur" placeholder="Umur" value="{{ old('umur') }}" min="1" max="120" required>
+                <input type="text" name="bio" placeholder="Bio" value="{{ old('bio') }}" required>
+                <input type="text" name="alamat" placeholder="Alamat" value="{{ old('alamat') }}" required>
+                <input type="password" name="password" placeholder="Password (minimal 8 karakter)" autocomplete="new-password" required>
+                <input type="password" name="password_confirmation" placeholder="Konfirmasi Password" autocomplete="new-password" required>
                 <input type="submit" value="Register">
               </form>
               </div>
@@ -51,3 +70,11 @@
     }, "slow");
   });
 </script>
+@if ($errors->any() || $errors->getBag('register')->any())
+  @push('script')
+    @if ($errors->getBag('register')->any())
+      $('.toggle').trigger('click');
+    @endif
+    $('#myModal').modal('show');
+  @endpush
+@endif

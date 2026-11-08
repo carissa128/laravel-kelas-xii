@@ -11,20 +11,29 @@ use App\Models\{
 use App\Http\Requests\StoreFilmRequest;
 use App\Http\Requests\UpdateFilmRequest;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class FilmController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function movies()
+    public function movies(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'search' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $search = $validated['search'] ?? null;
         $genreFilm = null;
         $films = Film::select('id','title', 'poster','year')
+                ->when($search, function ($query, $search) {
+                    $query->where('title', 'like', '%'.$search.'%');
+                })
                 ->orderByDesc('year')
-                ->OrderBy('created_at', 'asc')
-                ->paginate(18);
+                ->orderBy('created_at', 'asc')
+                ->paginate(18)
+                ->withQueryString();
         return view('components/movies', compact('films', 'genreFilm'));
     }
 
@@ -60,12 +69,13 @@ class FilmController extends Controller
                         ->OrderBy('created_at', 'asc')
                         ->limit(9)
                         ->get();
-        $comments        = Kritik::select('comment', 'user_id')
+        $comments        = Kritik::with('user:id,name')
+                        ->select('comment', 'rating', 'user_id')
                         ->where('film_id', '=', $film->id)
-                        ->orderBy('created_at', 'asc')
+                        ->orderByDesc('created_at')
                         ->limit(10)
                         ->get();
-        $perans         = Peran::all()->where('film_id', '=', $film->id);
+        $perans         = Peran::with('cast')->where('film_id', '=', $film->id)->get();
         return view('components.movie-show', compact('film','filmByGenre','filmByRelease','comments', 'perans'));
     }
 

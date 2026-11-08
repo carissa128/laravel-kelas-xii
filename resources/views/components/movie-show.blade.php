@@ -59,7 +59,7 @@
                       <tbody>
                         @foreach ($perans as $peran)
                         <tr>
-                          <td class="w3-list-info">{{ $peran->cast_id }}</td>
+                          <td class="w3-list-info">{{ $peran->cast->name ?? '' }}</td>
                           <td class="w3-list-info">{{ $peran->actor }}</td>
                         </tr>
                         @endforeach
@@ -114,34 +114,57 @@
           </div>
         </div>
         <div class="clearfix"> </div>
-        <div class="all-comments">
+        <div class="all-comments" id="comments">
           <div class="all-comments-info">
-            <a href="#">Comments</a>
+            <h3>Comments</h3>
+            @if (session('status'))
+              <p role="status">{{ session('status') }}</p>
+            @endif
             <div class="agile-info-wthree-box">
-              <form>
-                <input type="text" placeholder="Name" required="">			           					   
-                <input type="text" placeholder="Email" required="">
-                <input type="text" placeholder="Phone" required="">
-                <textarea placeholder="Message" required=""></textarea>
-                <input type="submit" value="SEND">
-                <div class="clearfix"> </div>
-              </form>
+              @auth
+                <form action="{{ route('comments.store', $film) }}" method="post">
+                  @csrf
+                  <label for="rating">Rating</label>
+                  <select name="rating" id="rating" required>
+                    <option value="">Pilih rating</option>
+                    @for ($rating = 5; $rating >= 1; $rating--)
+                      <option value="{{ $rating }}" @selected(old('rating') == $rating)>{{ $rating }} / 5</option>
+                    @endfor
+                  </select>
+                  @error('rating')
+                    <p role="alert">{{ $message }}</p>
+                  @enderror
+                  <label for="comment">Komentar</label>
+                  <textarea name="comment" id="comment" maxlength="2000" required>{{ old('comment') }}</textarea>
+                  @error('comment')
+                    <p role="alert">{{ $message }}</p>
+                  @enderror
+                  <input type="submit" value="Kirim komentar">
+                  <div class="clearfix"> </div>
+                </form>
+              @else
+                <p>Silakan login untuk menulis komentar.</p>
+                <a href="#" data-toggle="modal" data-target="#myModal">Login</a>
+              @endauth
             </div>
           </div>
           <div class="media-grids">
-            @foreach ($comments as $comment)
+            @forelse ($comments as $comment)
               <div class="media">
-                <h5>{{ $comment->user_id }}</h5>
+                <h5>{{ $comment->user?->name ?? 'Pengguna' }}</h5>
                 <div class="media-left">
                   <a href="#">
                     <img src="{{ asset('storage/images/user.jpg') }}" title="One movies" alt=" " />
                   </a>
                 </div>
                 <div class="media-body">
+                  <p>Rating: {{ $comment->rating }} / 5</p>
                   <p>{{ $comment->comment }}</p>
                 </div>
               </div>
-            @endforeach
+            @empty
+              <p>Belum ada komentar untuk film ini.</p>
+            @endforelse
           </div>
         </div>
       </div>

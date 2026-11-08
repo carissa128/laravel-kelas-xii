@@ -8,10 +8,12 @@
           <!--/browse-agile-w3ls -->
           <div class="browse-agile-w3ls general-w3ls">
             <div class="tittle-head">
-              @if ($genreFilm !== null)
-                      <h4 class="latest-text">Movies Of Genre {{ $genreFilm->name }}</h4>
-                    @else
-                      <h4 class="latest-text">List Of Movies</h4>
+              @if (request()->filled('search'))
+                <h4 class="latest-text">Hasil pencarian: {{ request('search') }}</h4>
+              @elseif ($genreFilm !== null)
+                <h4 class="latest-text">Movies Of Genre {{ $genreFilm->name }}</h4>
+              @else
+                <h4 class="latest-text">List Of Movies</h4>
                     @endif
               <div class="container">
                 <div class="agileits-single-top">
@@ -63,6 +65,9 @@
                 @endif
               </div>
                 @endfor
+              @if ($films->isEmpty())
+                <p role="status">Film dengan judul "{{ request('search') }}" tidak ditemukan.</p>
+              @endif
               <div class="clearfix"> </div>
             </div>
               </div>
